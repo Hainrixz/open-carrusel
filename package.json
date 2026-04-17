@@ -13,7 +13,7 @@
   },
   "scripts": {
     "setup": "node scripts/setup.mjs",
-    "dev": "next dev",
+    "dev": "next dev --no-turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
