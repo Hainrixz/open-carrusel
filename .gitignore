@@ -51,3 +51,10 @@ open-carrusel*.log
 
 # OS
 Thumbs.db
+
+# tiduin-carousel additions
+data/drafts/
+data/queue.json
+data/published.json
+.env.local
+NOTES.md
