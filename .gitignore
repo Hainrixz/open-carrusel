@@ -58,3 +58,4 @@ data/queue.json
 data/published.json
 .env.local
 NOTES.md
+!.env.local.example
