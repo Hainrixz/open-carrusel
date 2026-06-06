@@ -5,12 +5,14 @@ import fs from 'fs/promises'
 import path from 'path'
 
 export async function POST(req: NextRequest) {
-  const { carouselId, postId, caption, caption_variants } = await req.json() as {
-    carouselId: string
-    postId: string
-    caption: string
-    caption_variants?: string[]
+  let body: { carouselId: string; postId: string; caption?: string; caption_variants?: string[] }
+  try {
+    body = await req.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
+
+  const { carouselId, postId, caption, caption_variants } = body
 
   if (!carouselId || !postId) {
     return NextResponse.json({ error: 'carouselId and postId are required' }, { status: 400 })
