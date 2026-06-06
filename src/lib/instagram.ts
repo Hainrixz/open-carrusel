@@ -52,7 +52,9 @@ export async function checkTokenExpiry(): Promise<{ daysLeft: number; expiresAt:
   url.searchParams.set('access_token', token())
 
   const res = await fetch(url.toString())
-  const { data } = await res.json() as { data: { expires_at: number } }
+  const body = await res.json() as { data?: { expires_at: number }; error?: unknown }
+  if (!res.ok || !body.data) throw new Error(`Token check failed: ${JSON.stringify(body)}`)
+  const { data } = body
 
   const expiresAt = new Date(data.expires_at * 1000)
   const daysLeft = Math.floor((expiresAt.getTime() - Date.now()) / 86_400_000)
