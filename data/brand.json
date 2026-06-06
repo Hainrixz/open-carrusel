@@ -1,0 +1,19 @@
+{
+  "name": "Tiduin",
+  "colors": {
+    "primary": "#ED7D31",
+    "secondary": "#00B050",
+    "accent": "#ED7D31",
+    "background": "#343f4f",
+    "surface": "#3d4b5c"
+  },
+  "fonts": {
+    "heading": "Rajdhani",
+    "body": "Inter"
+  },
+  "customFonts": [],
+  "logoPath": null,
+  "styleKeywords": ["gaming", "aufbau-strategie", "survival", "tiduin"],
+  "createdAt": "2026-06-06T00:00:00.000Z",
+  "updatedAt": "2026-06-06T00:00:00.000Z"
+}

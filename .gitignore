@@ -24,8 +24,11 @@
 .DS_Store
 *.pem
 
-# app data (user-generated)
-/data/
+# app data (user-generated, selectively excluded)
+# data/brand.json is intentionally committed (Tiduin brand config)
+/data/carousels/
+/data/style-presets/
+/data/staged-actions/
 /public/uploads/
 
 # debug

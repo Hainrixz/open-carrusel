@@ -1,6 +1,6 @@
 // lib/templates/hook-prompt.ts
-export function hookPrompt(game: string, headline: string, subtitle: string): string {
-  return `Create a Hook slide (Slide 1 of 8) as a complete, self-contained HTML document.
+export function hookPrompt(game: string, headline: string, subtitle: string, totalSlides: number = 8): string {
+  return `Create a Hook slide (Slide 1 of ${totalSlides}) as a complete, self-contained HTML document.
 
 CANVAS: exactly 1080×1350px (set on <html> and <body>)
 MUST import Rajdhani 700 from Google Fonts.

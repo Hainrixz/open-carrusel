@@ -11,7 +11,7 @@ Design rules (follow EXACTLY):
 - Body (centered):
     eyebrow "Mehr Gaming-Tipps" in #00B050 uppercase 0.8rem letter-spacing 0.15em
     headline "Ich stream live auf Twitch" in Rajdhani 700 white 2.8rem, "live auf Twitch" in #ED7D31
-    streaming days: "${streamingDays}" in Rajdhani 600 #aaa 1.4rem
+    streaming days: "${streamingDays}" in Rajdhani 700 #aaa 1.4rem
     CTA button: background #ED7D31, text "twitch.tv/tiduin" in Rajdhani 700 white 1.4rem, border-radius 8px, padding 0.75rem 2rem, margin-top 1.5rem
     question text: italic #888 1rem, margin-top 2rem
 - Footer: "@tiduin · instagram" centered in #555 0.7rem

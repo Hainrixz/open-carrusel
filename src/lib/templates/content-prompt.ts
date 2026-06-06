@@ -11,7 +11,7 @@ export function contentPrompt(
   const totalStr = String(totalSlides).padStart(2, '0')
   return `Create a Content slide (Slide ${slideNum} of ${totalSlides}) as a complete, self-contained HTML document.
 
-CANVAS: exactly 1080×1350px
+CANVAS: exactly 1080×1350px (set on <html> and <body>)
 MUST import Rajdhani 700 from Google Fonts.
 
 Design rules (follow EXACTLY):
