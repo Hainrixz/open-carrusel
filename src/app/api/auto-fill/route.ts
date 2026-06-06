@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
+import { runClaude } from '@/lib/claude-cli'
 import { hookPrompt } from '@/lib/templates/hook-prompt'
 import { contentPrompt } from '@/lib/templates/content-prompt'
 import { ctaPrompt } from '@/lib/templates/cta-prompt'
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 interface SlideOutline {
   type: 'hook' | 'content' | 'cta'
@@ -16,18 +14,7 @@ interface SlideOutline {
 }
 
 async function generateSlideHtml(prompt: string): Promise<string> {
-  const message = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 4096,
-    messages: [{ role: 'user', content: prompt }],
-  })
-
-  if (!message.content.length || message.content[0].type !== 'text') {
-    throw new Error('Claude returned no text response for slide')
-  }
-
-  const raw = message.content[0].text
-  // Strip markdown code fences if Claude wraps HTML
+  const raw = await runClaude(prompt, 120_000)
   return raw.replace(/^```[^\n]*\n?/, '').replace(/\n?```$/, '').trim()
 }
 
@@ -56,8 +43,6 @@ export async function POST(req: NextRequest) {
 
   const origin = req.nextUrl.origin
 
-  // Create a new carousel in open-carrusel
-  // POST /api/carousels returns the carousel object directly (no nesting)
   const carouselRes = await fetch(`${origin}/api/carousels`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -75,7 +60,6 @@ export async function POST(req: NextRequest) {
   const total = slides.length
   const results: { slideNumber: number; slideId: string }[] = []
 
-  // Generate HTML for each slide and write to carousel
   for (let i = 0; i < slides.length; i++) {
     const slide = slides[i]
     const slideNum = i + 1
@@ -101,8 +85,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Write slide to carousel
-    // POST /api/carousels/[id]/slides returns the slide object directly (no nesting)
     const slideRes = await fetch(`${origin}/api/carousels/${carouselId}/slides`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

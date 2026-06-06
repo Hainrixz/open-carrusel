@@ -1,9 +1,6 @@
-// src/app/api/generate-outline/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
+import { runClaude } from '@/lib/claude-cli'
 import { buildBrandVoiceConstraint, checkBrandVoice } from '@/lib/brand-voice'
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 const FORMATS = ['tipps', 'fehler-beichte', 'quick-review', 'mechanik-erklaerung', 'schoenbau-unfall'] as const
 type Format = typeof FORMATS[number]
@@ -70,22 +67,13 @@ Antworte NUR mit diesem JSON-Format, ohne Erklärung:
   "caption_variants": ["...", "...", "..."]
 }`
 
-  let message: Awaited<ReturnType<typeof client.messages.create>>
+  let raw: string
   try {
-    message = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
-      messages: [{ role: 'user', content: prompt }],
-    })
+    raw = await runClaude(prompt)
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Anthropic API error'
+    const msg = err instanceof Error ? err.message : 'Claude CLI Fehler'
     return NextResponse.json({ error: msg }, { status: 502 })
   }
-
-  if (!message.content.length || message.content[0].type !== 'text') {
-    return NextResponse.json({ error: 'Claude hat keine Textantwort zurückgegeben' }, { status: 502 })
-  }
-  const raw = message.content[0].text
 
   let parsed: { slides: unknown[]; caption: string; caption_variants: string[] }
   try {
@@ -95,7 +83,6 @@ Antworte NUR mit diesem JSON-Format, ohne Erklärung:
     return NextResponse.json({ error: 'Claude hat kein gültiges JSON geliefert', raw }, { status: 500 })
   }
 
-  // Validate structure
   if (
     !Array.isArray(parsed.slides) ||
     parsed.slides.length !== 8 ||
