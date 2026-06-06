@@ -13,9 +13,9 @@
   },
   "scripts": {
     "setup": "node scripts/setup.mjs",
-    "dev": "next dev",
+    "dev": "tsx server.ts",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_ENV=production tsx server.ts",
     "lint": "eslint",
     "doctor": "node scripts/doctor.mjs"
   },
