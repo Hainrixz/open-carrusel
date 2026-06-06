@@ -70,20 +70,43 @@ Antworte NUR mit diesem JSON-Format, ohne Erklärung:
   "caption_variants": ["...", "...", "..."]
 }`
 
-  const message = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 1500,
-    messages: [{ role: 'user', content: prompt }],
-  })
+  let message: Awaited<ReturnType<typeof client.messages.create>>
+  try {
+    message = await client.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }],
+    })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Anthropic API error'
+    return NextResponse.json({ error: msg }, { status: 502 })
+  }
 
-  const raw = message.content[0].type === 'text' ? message.content[0].text : ''
+  if (!message.content.length || message.content[0].type !== 'text') {
+    return NextResponse.json({ error: 'Claude hat keine Textantwort zurückgegeben' }, { status: 502 })
+  }
+  const raw = message.content[0].text
 
   let parsed: { slides: unknown[]; caption: string; caption_variants: string[] }
   try {
-    const json = raw.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim()
+    const json = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
     parsed = JSON.parse(json)
   } catch {
     return NextResponse.json({ error: 'Claude hat kein gültiges JSON geliefert', raw }, { status: 500 })
+  }
+
+  // Validate structure
+  if (
+    !Array.isArray(parsed.slides) ||
+    parsed.slides.length !== 8 ||
+    typeof parsed.caption !== 'string' ||
+    !Array.isArray(parsed.caption_variants) ||
+    parsed.caption_variants.length !== 3
+  ) {
+    return NextResponse.json(
+      { error: 'Claude hat eine ungültige Outline-Struktur zurückgegeben', raw },
+      { status: 500 }
+    )
   }
 
   const { violations } = checkBrandVoice(JSON.stringify(parsed))
