@@ -79,7 +79,11 @@ export default function ReviewPage() {
 
   async function handleDelete() {
     if (!confirm('Post wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) return
-    await fetch(`/api/delete-post?id=${id}`, { method: 'DELETE' })
+    const res = await fetch(`/api/delete-post?id=${id}`, { method: 'DELETE' })
+    if (!res.ok) {
+      alert('Löschen fehlgeschlagen. Bitte versuche es erneut.')
+      return
+    }
     router.push('/dashboard')
   }
 

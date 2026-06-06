@@ -10,13 +10,14 @@ export async function GET(req: NextRequest) {
     return new NextResponse('Missing postId or file', { status: 400 })
   }
 
-  // Prevent path traversal
+  // Prevent path traversal in both postId and filename
+  const safePostId = path.basename(postId)
   const safeName = path.basename(file)
-  if (safeName !== file || !safeName.endsWith('.jpg')) {
-    return new NextResponse('Invalid file name', { status: 400 })
+  if (safePostId !== postId || safeName !== file || !safeName.endsWith('.jpg')) {
+    return new NextResponse('Invalid parameters', { status: 400 })
   }
 
-  const filepath = path.join(process.cwd(), 'data', 'drafts', postId, safeName)
+  const filepath = path.join(process.cwd(), 'data', 'drafts', safePostId, safeName)
 
   try {
     const bytes = await fs.readFile(filepath)
