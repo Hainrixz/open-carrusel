@@ -28,7 +28,7 @@ async function generateSlideHtml(prompt: string): Promise<string> {
 
   const raw = message.content[0].text
   // Strip markdown code fences if Claude wraps HTML
-  return raw.replace(/^```html\n?/, '').replace(/\n?```$/, '').trim()
+  return raw.replace(/^```[^\n]*\n?/, '').replace(/\n?```$/, '').trim()
 }
 
 export async function POST(req: NextRequest) {
