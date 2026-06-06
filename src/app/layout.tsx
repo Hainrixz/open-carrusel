@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Rajdhani, Inter } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -44,7 +45,23 @@ export default function RootLayout({
       <head>
         <meta name="google" content="notranslate" />
       </head>
-      <body className="h-full notranslate" suppressHydrationWarning>{children}</body>
+      <body className="h-full notranslate" suppressHydrationWarning>
+        <nav className="flex items-center gap-4 px-6 py-3 border-b border-gray-800 bg-gray-900/80 backdrop-blur-sm sticky top-0 z-50">
+          <span
+            className="font-bold text-orange-400 text-lg mr-2"
+            style={{ fontFamily: 'var(--font-rajdhani), sans-serif' }}
+          >
+            Tiduin Carousel
+          </span>
+          <Link href="/dashboard" className="text-sm text-gray-400 hover:text-white transition-colors">
+            Dashboard
+          </Link>
+          <Link href="/new-post" className="text-sm text-gray-400 hover:text-white transition-colors">
+            Neuer Post
+          </Link>
+        </nav>
+        {children}
+      </body>
     </html>
   );
 }
