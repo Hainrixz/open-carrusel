@@ -5,7 +5,8 @@ export function contentPrompt(
   slideNum: number,
   totalSlides: number,
   text: string,
-  detail: string
+  detail: string,
+  screenshotUrl?: string
 ): string {
   const numStr = String(slideNum).padStart(2, '0')
   const totalStr = String(totalSlides).padStart(2, '0')
@@ -30,6 +31,6 @@ IMPORTANT: main text MUST be 14 words or fewer.
 Content:
 Main text: ${text}
 Detail: ${detail}
-
+${screenshotUrl && slideNum === 2 ? `\n- Screenshot: <img src="${screenshotUrl}" style="position:absolute;bottom:0;right:0;width:45%;height:60%;object-fit:cover;opacity:0.25;border-radius:4px 0 0 0;z-index:0"> — subtle background presence, low opacity` : ''}
 Output ONLY the complete HTML document. No explanation, no code fences.`
 }

@@ -35,6 +35,7 @@ export default function NewPostPage() {
   const [inputMode, setInputMode] = useState<'manual' | 'video'>('manual')
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [transcript, setTranscript] = useState('')
+  const [screenshotFile, setScreenshotFile] = useState<File | null>(null)
 
   const effectiveGame = game === '__custom__' ? customGame : game
   const isWorking = status !== 'idle' && status !== 'error'
@@ -96,6 +97,20 @@ export default function NewPostPage() {
 
       // Step 2: Auto-fill slides
       setStatus('filling')
+
+      // Upload screenshot if provided
+      let uploadedScreenshotUrl = ''
+      if (screenshotFile) {
+        const fd = new FormData()
+        fd.append('file', screenshotFile)
+        const uploadRes = await fetch('/api/upload', { method: 'POST', body: fd })
+        if (uploadRes.ok) {
+          const { url } = await uploadRes.json()
+          uploadedScreenshotUrl = url
+        }
+        // Non-fatal: if upload fails, continue without screenshot
+      }
+
       const fillRes = await fetch('/api/auto-fill', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -104,6 +119,7 @@ export default function NewPostPage() {
           game: effectiveGame,
           format,
           slides: outline.slides,
+          screenshotUrl: uploadedScreenshotUrl || undefined,
         }),
       })
       if (!fillRes.ok) {
@@ -252,6 +268,22 @@ export default function NewPostPage() {
           >
             {FORMATS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
           </select>
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-400 mb-1">
+            Game Screenshot <span className="text-gray-600">(optional)</span>
+          </label>
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            onChange={e => setScreenshotFile(e.target.files?.[0] ?? null)}
+            className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white text-sm"
+          />
+          {screenshotFile && (
+            <p className="text-xs text-green-400 mt-1">✓ {screenshotFile.name} wird mit Slides verwendet</p>
+          )}
+          <p className="text-xs text-gray-600 mt-1">Wird als subtiler Hintergrund in Hook &amp; Slide 2 eingeblendet</p>
         </div>
 
         {isWorking && (

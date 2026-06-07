@@ -1,5 +1,5 @@
 // lib/templates/hook-prompt.ts
-export function hookPrompt(game: string, headline: string, subtitle: string, totalSlides: number = 8): string {
+export function hookPrompt(game: string, headline: string, subtitle: string, totalSlides: number = 8, screenshotUrl?: string): string {
   return `Create a Hook slide (Slide 1 of ${totalSlides}) as a complete, self-contained HTML document.
 
 CANVAS: exactly 1080×1350px (set on <html> and <body>)
@@ -19,6 +19,6 @@ Content:
 Game: ${game}
 Headline: ${headline}
 Subtitle: ${subtitle}
-
+${screenshotUrl ? `\n- Background image: use <img src="${screenshotUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.15;z-index:-1"> layered behind the content (low opacity overlay, z-index below everything else)` : ''}
 Output ONLY the complete HTML document. No explanation, no code fences.`
 }

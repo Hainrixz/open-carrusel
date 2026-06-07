@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
     format: string
     streamingDays?: string
     slides: SlideOutline[]
+    screenshotUrl?: string
   }
   try {
     body = await req.json()
@@ -32,7 +33,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const { postId, game, format, streamingDays = 'Mo, Mi, Sa & So', slides } = body
+  const { postId, game, format, streamingDays = 'Mo, Mi, Sa & So', slides, screenshotUrl } = body
 
   if (!postId || !game || !format || !Array.isArray(slides) || slides.length === 0) {
     return NextResponse.json(
@@ -66,11 +67,11 @@ export async function POST(req: NextRequest) {
 
     let prompt: string
     if (slide.type === 'hook') {
-      prompt = hookPrompt(game, slide.headline ?? '', slide.subtitle ?? '', total)
+      prompt = hookPrompt(game, slide.headline ?? '', slide.subtitle ?? '', total, screenshotUrl)
     } else if (slide.type === 'cta') {
       prompt = ctaPrompt(streamingDays, slide.question ?? '')
     } else {
-      prompt = contentPrompt(game, format, slideNum, total, slide.text ?? '', slide.detail ?? '')
+      prompt = contentPrompt(game, format, slideNum, total, slide.text ?? '', slide.detail ?? '', screenshotUrl)
     }
 
     let html: string
