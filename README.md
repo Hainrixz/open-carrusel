@@ -10,12 +10,15 @@ Basiert auf [open-carrusel](https://github.com/Hainrixz/open-carrusel) (Next.js 
 
 - **Carousel-Generierung** — Claude CLI erstellt Slide-HTML automatisch auf Basis von Spiel, Thema und Format
 - **8-Slide-Struktur** — Hook → 6 Content-Slides → CTA, mit Rajdhani-Font und Tiduin-Brandfarben
+- **Video-Input** — Videoclip hochladen, Whisper transkribiert automatisch (Gaming-PC Server oder lokaler Fallback)
+- **News-Intake** — `/api/intake-news` nimmt JSON von externen Agenten entgegen und erstellt Draft-Posts vollautomatisch
+- **Screenshot-Integration** — optionaler Game-Screenshot wird als subtiler Hintergrund in Hook & Slide 2 eingeblendet
 - **JPEG-Export** — Puppeteer rendert jedes Slide auf 1080×1350 px, Sharp konvertiert zu JPEG
 - **Queue-System** — JSON-basierte Warteschlange mit Mutex-geschützten Schreibzugriffen
 - **Scheduler** — node-cron prüft jede Minute, ob ein Post fällig ist
 - **Instagram-Publish** — vollautomatischer 3-Schritt-Publish via Instagram Graph API v25.0
 - **SFTP-Upload** — temporäres öffentliches Hosting der Bilder vor dem API-Aufruf
-- **Dashboard** — Übersicht aller geplanten, veröffentlichten und fehlgeschlagenen Posts
+- **Dashboard** — Übersicht aller geplanten, veröffentlichten und fehlgeschlagenen Posts (inkl. Fehlermeldung)
 - **Brand-Voice-Checker** — Blacklist-Prüfung gegen Tiduin-Sprachregeln
 
 ---
@@ -29,6 +32,8 @@ Basiert auf [open-carrusel](https://github.com/Hainrixz/open-carrusel) (Next.js 
 | Instagram Business-Konto | mit verknüpfter Facebook-Seite |
 | Instagram Graph API Access Token | Long-Lived Token (60 Tage) |
 | SFTP-Server | für temporäres öffentliches Bild-Hosting |
+| Whisper CLI *(optional)* | für lokale Video-Transkription (`pip install openai-whisper`) |
+| Gaming-PC FastAPI-Server *(optional)* | schnellere Transkription via `WHISPER_SERVER_URL` |
 
 > **Kein Anthropic API-Key nötig.** Das Tool nutzt die lokal installierte Claude CLI direkt als Subprocess — kein `ANTHROPIC_API_KEY` erforderlich.
 
@@ -67,6 +72,9 @@ PUBLIC_BASE_URL=https://meinserver.de/tmp
 
 # Optional: falls claude nicht im PATH liegt
 # CLAUDE_CLI_PATH=/usr/local/bin/claude
+
+# Optional: Whisper Gaming-PC Server URL (Phase 2)
+# WHISPER_SERVER_URL=http://gaming-pc:8765
 ```
 
 ---
