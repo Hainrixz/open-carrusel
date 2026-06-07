@@ -14,14 +14,14 @@ const FORMAT_LABELS: Record<Format, string> = {
 }
 
 export async function POST(req: NextRequest) {
-  let body: { game?: string; topic?: string; format?: string }
+  let body: { game?: string; topic?: string; format?: string; transcript?: string }
   try {
     body = await req.json()
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const { game, topic, format } = body
+  const { game, topic, format, transcript } = body
 
   if (!game || !topic || !format || !FORMATS.includes(format as Format)) {
     return NextResponse.json(
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
 Spiel: ${game}
 Thema: ${topic}
-Format: ${formatLabel}
+Format: ${formatLabel}${transcript ? `\n\nTranskript des Videos (primäre Inhaltsquelle, bis 4000 Zeichen):\n${transcript.slice(0, 4000)}` : ''}
 
 ${brandVoice}
 
