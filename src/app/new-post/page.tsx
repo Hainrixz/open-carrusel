@@ -47,7 +47,7 @@ export default function NewPostPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!effectiveGame) return
+    if (!effectiveGame || (inputMode === 'manual' && !topic) || (inputMode === 'video' && !videoFile)) return
     setError('')
 
     let effectiveTopic = topic
@@ -174,7 +174,7 @@ export default function NewPostPage() {
             <button
               key={mode}
               type="button"
-              onClick={() => setInputMode(mode)}
+              onClick={() => { setInputMode(mode); setVideoFile(null); setTranscript('') }}
               className={`flex-1 py-2 px-3 rounded text-sm font-medium transition-colors ${
                 inputMode === mode
                   ? 'bg-orange-500 text-white'
@@ -234,7 +234,7 @@ export default function NewPostPage() {
               required={inputMode === 'video'}
             />
             <p className="text-xs text-gray-500 mt-1">MP4, MOV, MKV, WebM — wird per Whisper transkribiert</p>
-            {transcript && (
+            {transcript && inputMode === 'video' && (
               <div className="mt-2 p-3 bg-gray-800 rounded border border-gray-700">
                 <p className="text-xs text-gray-400 mb-1">Transcript (Vorschau):</p>
                 <p className="text-xs text-gray-300 line-clamp-3">{transcript}</p>
