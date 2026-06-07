@@ -42,6 +42,10 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  if (screenshotUrl && !/^\/uploads\/[a-zA-Z0-9_-]+\.png$/.test(screenshotUrl)) {
+    return NextResponse.json({ error: 'Invalid screenshotUrl' }, { status: 400 })
+  }
+
   const origin = req.nextUrl.origin
 
   const carouselRes = await fetch(`${origin}/api/carousels`, {
