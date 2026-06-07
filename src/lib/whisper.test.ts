@@ -20,6 +20,13 @@ vi.mock('fs', () => ({
   },
 }))
 
+// Mock os.tmpdir()
+vi.mock('os', () => ({
+  default: {
+    tmpdir: () => '/tmp',
+  },
+}))
+
 // Mock global fetch
 const mockFetch = vi.fn()
 vi.stubGlobal('fetch', mockFetch)

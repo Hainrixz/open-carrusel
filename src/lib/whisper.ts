@@ -1,5 +1,6 @@
 import { execFile } from 'child_process'
 import fs from 'fs'
+import os from 'os'
 import path from 'path'
 
 async function transcribeViaServer(serverUrl: string, videoPath: string): Promise<string> {
@@ -16,7 +17,10 @@ async function transcribeViaServer(serverUrl: string, videoPath: string): Promis
     throw new Error(`Whisper server returned ${res.status}`)
   }
 
-  const data = await res.json() as { text: string }
+  const data = await res.json() as { text?: string }
+  if (typeof data.text !== 'string') {
+    throw new Error(`Whisper server response missing 'text' field: ${JSON.stringify(data)}`)
+  }
   return data.text
 }
 
@@ -24,12 +28,12 @@ function transcribeViaCLI(videoPath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     execFile(
       'whisper',
-      [videoPath, '--model', 'medium', '--language', 'de', '--output-format', 'txt', '--output-dir', '/tmp'],
+      [videoPath, '--model', 'medium', '--language', 'de', '--output-format', 'txt', '--output-dir', os.tmpdir()],
       { timeout: 300_000 },
       (err, stdout) => {
         if (err) return reject(err)
         if (stdout.trim()) return resolve(stdout.trim())
-        const txtFile = path.join('/tmp', path.basename(videoPath, path.extname(videoPath)) + '.txt')
+        const txtFile = path.join(os.tmpdir(), path.basename(videoPath, path.extname(videoPath)) + '.txt')
         try {
           resolve(fs.readFileSync(txtFile, 'utf-8').trim())
         } catch {
