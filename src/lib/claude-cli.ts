@@ -41,7 +41,8 @@ export async function runClaude(prompt: string, timeoutMs = DEFAULT_TIMEOUT_MS):
     child.on('exit', (code) => {
       clearTimeout(timer)
       if (code !== 0) {
-        reject(new Error(`Claude CLI exit code ${code}: ${stderr.slice(0, 500)}`))
+        const detail = (stderr || stdout).slice(0, 500)
+        reject(new Error(`Claude CLI exit code ${code}: ${detail}`))
         return
       }
       resolve(stdout.trim())

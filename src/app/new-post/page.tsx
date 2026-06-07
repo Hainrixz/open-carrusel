@@ -122,7 +122,8 @@ export default function NewPostPage() {
   }
 
   return (
-    <main className="max-w-lg mx-auto p-8">
+    <main className="min-h-screen bg-gray-900">
+      <div className="max-w-lg mx-auto p-8">
       <div className="mb-6">
         <Link href="/dashboard" className="text-sm text-gray-400 hover:text-white">← Dashboard</Link>
       </div>
@@ -199,6 +200,7 @@ export default function NewPostPage() {
           {isWorking ? 'Wird erstellt…' : 'Post erstellen'}
         </button>
       </form>
+      </div>
     </main>
   )
 }

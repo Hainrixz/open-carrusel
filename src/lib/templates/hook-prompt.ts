@@ -9,10 +9,10 @@ Design rules (follow EXACTLY):
 - Background: #343f4f, fills full canvas
 - Top border: 5px, linear-gradient left→right #ED7D31 → #00B050
 - Header row (padding: 1rem): left = game name in #ED7D31 uppercase 0.75rem, right = "Tiduin" in #888 0.75rem
-- Body (centered vertically):
-    eyebrow text in #00B050 uppercase 0.8rem letter-spacing 0.15em
-    headline in Rajdhani 700 white 3.5rem, key word in #ED7D31
-    optional subtitle in #aaa 1rem (omit if empty)
+- Body (flex:1, display:flex, flex-direction:column, justify-content:center, gap:1.2rem):
+    eyebrow text in #00B050 uppercase 1.1rem letter-spacing 0.2em
+    headline in Rajdhani 700 white 6rem line-height 1.1, key word in #ED7D31
+    optional subtitle in #aaa 2rem line-height 1.4 (omit if empty)
 - Footer: "Swipe für alle Tipps →" left in #888 0.8rem, "→" right in #ED7D31
 
 Content:
