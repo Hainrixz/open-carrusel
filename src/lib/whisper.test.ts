@@ -1,5 +1,7 @@
+// src/lib/whisper.test.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
+// Mock child_process.execFile
 const mockExecFile = vi.fn()
 vi.mock('child_process', () => ({
   execFile: (cmd: string, args: string[], opts: unknown, cb: (err: Error | null, stdout: string) => void) => {
@@ -8,6 +10,17 @@ vi.mock('child_process', () => ({
   },
 }))
 
+// Mock fs so readFileSync doesn't throw ENOENT in tests
+vi.mock('fs', () => ({
+  default: {
+    readFileSync: vi.fn((filePath: string, encoding?: string) => {
+      if (encoding === 'utf-8') return 'Fake transcript from file'
+      return Buffer.from('fake-video-bytes')
+    }),
+  },
+}))
+
+// Mock global fetch
 const mockFetch = vi.fn()
 vi.stubGlobal('fetch', mockFetch)
 

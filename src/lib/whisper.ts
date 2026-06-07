@@ -3,10 +3,13 @@ import fs from 'fs'
 import path from 'path'
 
 async function transcribeViaServer(serverUrl: string, videoPath: string): Promise<string> {
+  const fileBytes = fs.readFileSync(videoPath)
+  const form = new FormData()
+  form.append('file', new Blob([fileBytes]), path.basename(videoPath))
+
   const res = await fetch(`${serverUrl}/transcribe`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ path: videoPath }),
+    body: form,
   })
 
   if (!res.ok) {
