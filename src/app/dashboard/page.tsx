@@ -135,6 +135,11 @@ function PostRow({ post }: { post: PostWithFiles }) {
         <p className="text-xs text-gray-500">
           {publishDate ?? createdDate}
         </p>
+        {post.status === 'failed' && post.error && (
+          <p className="text-xs text-red-400 truncate mt-0.5" title={post.error}>
+            {post.error}
+          </p>
+        )}
       </div>
       <span className={`text-xs px-2 py-1 rounded flex-shrink-0 ${STATUS_CLASS[post.status] ?? ''}`}>
         {STATUS_LABEL[post.status] ?? post.status}
