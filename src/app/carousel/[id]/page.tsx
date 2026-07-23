@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useRef, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Trash2, Grid3X3, Bookmark, Maximize2 } from "lucide-react";
+import { Trash2, Grid3X3, Bookmark, BookmarkCheck, Maximize2 } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -32,6 +32,9 @@ export default function CarouselEditorPage({ params }: PageProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSafeZones, setShowSafeZones] = useState(false);
   const [showFullscreen, setShowFullscreen] = useState(false);
+  const [saveTemplateState, setSaveTemplateState] = useState<
+    "idle" | "saving" | "saved" | "error"
+  >("idle");
 
   // Confirm dialog state
   const [confirmState, setConfirmState] = useState<{
@@ -142,6 +145,24 @@ export default function CarouselEditorPage({ params }: PageProps) {
       },
     });
   }, [carousel, id, router]);
+
+  const handleSaveTemplate = useCallback(async () => {
+    if (!carousel || saveTemplateState === "saving") return;
+    setSaveTemplateState("saving");
+    try {
+      const res = await fetch("/api/templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ carouselId: carousel.id }),
+      });
+      if (!res.ok) throw new Error(`Save failed: ${res.status}`);
+      setSaveTemplateState("saved");
+    } catch {
+      setSaveTemplateState("error");
+    } finally {
+      setTimeout(() => setSaveTemplateState("idle"), 2000);
+    }
+  }, [carousel, saveTemplateState]);
 
   const handleStreamStart = useCallback(() => {
     setIsGenerating(true);
@@ -282,18 +303,29 @@ export default function CarouselEditorPage({ params }: PageProps) {
             <Button
               variant="ghost"
               size="sm"
-              onClick={async () => {
-                await fetch("/api/templates", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ carouselId: carousel.id }),
-                });
-              }}
-              className="text-muted-foreground"
+              onClick={handleSaveTemplate}
+              disabled={saveTemplateState === "saving"}
+              className={
+                saveTemplateState === "saved"
+                  ? "text-accent"
+                  : saveTemplateState === "error"
+                    ? "text-destructive"
+                    : "text-muted-foreground"
+              }
               aria-label="Save as template"
-              title="Save as template"
+              title={
+                saveTemplateState === "saved"
+                  ? "Saved as template"
+                  : saveTemplateState === "error"
+                    ? "Failed to save — try again"
+                    : "Save as template"
+              }
             >
-              <Bookmark className="h-3.5 w-3.5" />
+              {saveTemplateState === "saved" ? (
+                <BookmarkCheck className="h-3.5 w-3.5" />
+              ) : (
+                <Bookmark className="h-3.5 w-3.5" />
+              )}
             </Button>
             <Button
               variant="ghost"
