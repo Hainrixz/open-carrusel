@@ -95,7 +95,7 @@ That's it. Dependencies install, the dev server starts, your browser opens. Now 
 git clone https://github.com/Hainrixz/open-carrusel.git
 cd open-carrusel
 npm run setup        # installs deps + seeds /data/
-npm run dev          # starts http://localhost:3000
+npm run dev          # starts http://localhost:3100
 ```
 
 You won't get the AI chat without Claude Code installed (the in-app agent shells out to the `claude` CLI), but the editor and export still work for static slides.
@@ -109,6 +109,8 @@ You won't get the AI chat without Claude Code installed (the in-app agent shells
 - **Iterate per slide**: "Make slide 3 more minimal", "Change the accent to teal", "Swap the hook for something punchier."
 - **Three Instagram aspect ratios** ready to go: 1:1 (1080×1080), 4:5 (1080×1350), 9:16 (1080×1920).
 - **Brand config** — name, color palette, fonts, logo, style keywords. Claude reads it before every generation so output stays on-brand.
+- **Editorial design system, applied silently** — your 5 brand colors are expanded into a 14-token palette (deep ink ground, warm paper, hairlines, contrast-checked accents), paired with a type scale that follows the slide dimensions and an ink/paper rhythm across the carousel. The agent executes it instead of improvising a look per slide.
+- **Generated imagery (optional)** — add a Magnific key and the cover, the climax and one mid-slide get real photography under one art direction, cropped to exact size. See [Configuration](#-configuration).
 - **Templates** — save any carousel as a template, reuse it for the next one.
 - **Reference images** — drop in screenshots of carousels you love. Claude studies them to match style.
 - **Drag to reorder** slides via dnd-kit. Undo per-slide if a tweak goes sideways (version history per slide).
@@ -167,7 +169,7 @@ Type these inside Claude Code:
 | Command         | What it does                                                                                            |
 |-----------------|---------------------------------------------------------------------------------------------------------|
 | `/start [port]` | Install + seed + run + open browser. Idempotent — re-running on a healthy install is seconds.           |
-| `/stop [port]`  | Kill the dev server. Defaults to `:3000`, accepts a port arg matching `/start`.                         |
+| `/stop [port]`  | Kill the dev server. Defaults to `:3100`, accepts a port arg matching `/start`.                         |
 | `/reset`        | Wipe local carousels, templates, brand config, uploads, exports — and re-seed defaults. Asks first.    |
 | `/doctor`       | Run setup diagnostics: Node version, Claude CLI on PATH, deps installed, data files seeded, port free. |
 
@@ -186,7 +188,7 @@ npm run doctor    # run scripts/doctor.mjs (works pre-`npm install`)
 
 ```mermaid
 flowchart LR
-  U(["Browser :3000"])
+  U(["Browser :3100"])
   C["Chat Panel"]
   P["Slide Preview<br/>(sandboxed iframe)"]
   F["Filmstrip<br/>(dnd-kit)"]
@@ -298,6 +300,25 @@ CLAUDE_CLI_PATH=/path/to/claude   # set if `which claude` doesn't find it
 
 On Windows, run `where claude` in PowerShell to find the path (typically `C:\Users\<you>\AppData\Roaming\npm\claude.cmd`), then set `CLAUDE_CLI_PATH` in `.env.local`.
 
+### Slide imagery (optional)
+
+Add a [Magnific](https://www.magnific.com/user/api-keys) key and the agent starts illustrating carousels — 2 to 3 generated photos per carousel (cover, climax, one mid-slide), under a single art direction it picks silently:
+
+```bash
+MAGNIFIC_API_KEY=your-key
+```
+
+Images are generated with Seedream V5 Lite, cropped to the carousel's exact pixel size, and stored in `/public/uploads/` like any other upload — so preview, export and the ZIP all treat them identically. Without the key the agent never mentions images and builds typography-only slides.
+
+The app **polls** Magnific for the finished image, which is what works on localhost. If you expose the dev server through a tunnel, you can let Magnific push the result instead:
+
+```bash
+MAGNIFIC_WEBHOOK_URL=https://<your-tunnel>/api/images/webhook
+MAGNIFIC_WEBHOOK_SECRET=your-webhook-secret
+```
+
+The receiver verifies the HMAC-SHA256 signature and a 5-minute timestamp window before accepting anything. See `.env.example` for the full list.
+
 ### Brand config
 
 Set on first run (or via the gear icon in the top bar). Stored at `/data/brand.json`. Fields:
@@ -326,7 +347,7 @@ Next.js 16 requires Node 20+. Install via [nodejs.org](https://nodejs.org) or [n
 **`/start` says "Claude CLI not found."**
 Install [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and authenticate. The setup script searches `~/.local/bin/claude`, `/usr/local/bin/claude`, `/opt/homebrew/bin/claude`, `~/.npm-global/bin/claude`, and `$CLAUDE_CLI_PATH`. If yours lives elsewhere, set `CLAUDE_CLI_PATH` in `.env.local`.
 
-**Port 3000 is in use.**
+**Port 3100 is in use.**
 Run `/stop` to kill whatever's there, or run `/start 3001` to use a different port.
 
 **Export fails or hangs.**

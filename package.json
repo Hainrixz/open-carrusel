@@ -13,9 +13,9 @@
   },
   "scripts": {
     "setup": "node scripts/setup.mjs",
-    "dev": "next dev",
+    "dev": "next dev --port 3100",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --port 3100",
     "lint": "eslint",
     "doctor": "node scripts/doctor.mjs"
   },

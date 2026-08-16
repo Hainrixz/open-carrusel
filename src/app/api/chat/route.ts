@@ -6,6 +6,7 @@ import { buildSystemPrompt } from "@/lib/chat-system-prompt";
 import { getBrand } from "@/lib/brand";
 import { getCarousel } from "@/lib/carousels";
 import { getPreset } from "@/lib/style-presets";
+import { isMagnificConfigured } from "@/lib/magnific";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -49,7 +50,16 @@ export async function POST(request: NextRequest) {
   const brand = await getBrand();
   const carousel = carouselId ? await getCarousel(carouselId) : null;
   const stylePreset = stylePresetId ? await getPreset(stylePresetId) : null;
-  const systemPrompt = buildSystemPrompt(brand, carousel, stylePreset);
+  // The agent curls the app's own API — point it at the origin this request came in on,
+  // so the dev-server port is never hardcoded in the prompt.
+  const host = request.headers.get("host") ?? "localhost:3100";
+  const systemPrompt = buildSystemPrompt(
+    brand,
+    carousel,
+    stylePreset,
+    `http://${host}`,
+    isMagnificConfigured()
+  );
 
   const claudePath = getClaudePath();
   const abortController = new AbortController();

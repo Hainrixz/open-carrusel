@@ -13,11 +13,10 @@ interface ChatInputProps {
 }
 
 const SUGGESTIONS = [
-  "Create a 5-slide carousel about...",
-  "Make the design more minimal",
-  "Change the accent color to blue",
-  "Add a call-to-action slide",
-  "Make the headings bigger",
+  "Quero um carrossel sobre...",
+  "mais ângulos",
+  "refazer hooks",
+  "reiniciar",
 ];
 
 export function ChatInput({ onSend, isStreaming, disabled, textareaRef: externalRef, onStop }: ChatInputProps) {
@@ -73,7 +72,7 @@ export function ChatInput({ onSend, isStreaming, disabled, textareaRef: external
           onKeyDown={handleKeyDown}
           onInput={handleInput}
           placeholder={
-            isStreaming ? "AI is working..." : "Describe your carousel..."
+            isStreaming ? "Escrevendo..." : "Qual o assunto do carrossel?"
           }
           disabled={isStreaming || disabled}
           rows={1}

@@ -34,8 +34,20 @@ export function ChatPanel({
   const [isStreaming, setIsStreaming] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [imagesEnabled, setImagesEnabled] = useState<boolean | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+
+  // Image generation is silent by design, so the empty state is the one place that says
+  // whether the agent can illustrate slides at all.
+  useEffect(() => {
+    fetch("/api/images/check")
+      .then((res) => res.json())
+      .then((data: { configured?: boolean }) =>
+        setImagesEnabled(Boolean(data.configured))
+      )
+      .catch(() => setImagesEnabled(null));
+  }, []);
 
   // Load session ID and chat history from localStorage
   useEffect(() => {
@@ -252,9 +264,9 @@ export function ChatPanel({
     <div className="h-full flex flex-col">
       <div className="px-4 py-3 border-b border-border flex items-start justify-between">
         <div>
-          <h2 className="text-sm font-semibold">AI Assistant</h2>
+          <h2 className="text-sm font-semibold">Carrossel Builder</h2>
           <p className="text-xs text-muted-foreground">
-            Describe the carousel you want to create
+            Ângulos, hook, copy, slides
           </p>
         </div>
         {messages.length > 0 && (
@@ -280,6 +292,13 @@ export function ChatPanel({
             <p className="text-xs">
               Tell me what carousel you&apos;d like to create
             </p>
+            {imagesEnabled !== null && (
+              <p className="text-[10px] mt-3 opacity-70">
+                {imagesEnabled
+                  ? "Imagens de slide: ligadas (Magnific)"
+                  : "Imagens de slide: desligadas. Defina MAGNIFIC_API_KEY em .env.local"}
+              </p>
+            )}
           </div>
         )}
         {messages.map((msg) => (

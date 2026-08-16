@@ -1,5 +1,6 @@
 import type { AspectRatio } from "@/types/carousel";
 import { DIMENSIONS } from "@/types/carousel";
+import { googleFontParam } from "./font-axes";
 
 /**
  * Extract Google Font family names from slide HTML.
@@ -52,12 +53,7 @@ export function wrapSlideHtml(
     fontBlock = `<style>${options.inlineFontCss}</style>`;
   } else if (fontFamilies.length > 0) {
     // For preview: use Google Fonts CDN link
-    const params = fontFamilies
-      .map(
-        (f) =>
-          `family=${encodeURIComponent(f)}:wght@300;400;500;600;700;800`
-      )
-      .join("&");
+    const params = fontFamilies.map(googleFontParam).join("&");
     fontBlock = `<link href="https://fonts.googleapis.com/css2?${params}&display=swap" rel="stylesheet">`;
   }
 

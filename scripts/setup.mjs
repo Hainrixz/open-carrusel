@@ -116,6 +116,17 @@ function seedDataFiles() {
   }
 }
 
+// Commented placeholders so the optional image keys are discoverable in .env.local
+// itself, instead of only in the README.
+const MAGNIFIC_PLACEHOLDER = [
+  "",
+  "# Slide imagery (optional) — https://www.magnific.com/user/api-keys",
+  "# MAGNIFIC_API_KEY=",
+  "# Only needed if you expose this dev server through a tunnel:",
+  "# MAGNIFIC_WEBHOOK_URL=https://<your-tunnel>/api/images/webhook",
+  "# MAGNIFIC_WEBHOOK_SECRET=",
+];
+
 function writeEnvLocal(claudePath) {
   const envPath = path.join(ROOT, ".env.local");
   let existing = "";
@@ -129,7 +140,11 @@ function writeEnvLocal(claudePath) {
     .split(/\r?\n/)
     .filter((line) => !line.startsWith("CLAUDE_CLI_PATH="));
 
-  lines.push(`CLAUDE_CLI_PATH=${claudePath}`);
+  if (claudePath) lines.unshift(`CLAUDE_CLI_PATH=${claudePath}`);
+
+  if (!existing.includes("MAGNIFIC_API_KEY")) {
+    lines.push(...MAGNIFIC_PLACEHOLDER);
+  }
 
   while (lines.length > 1 && lines[lines.length - 1] === "") lines.pop();
 
@@ -152,9 +167,9 @@ async function main() {
 
   log("🔍 Looking for Claude CLI...");
   const claudePath = findClaudePath();
+  writeEnvLocal(claudePath);
   if (claudePath) {
     log(`  ✅ Found Claude CLI at: ${claudePath}`);
-    writeEnvLocal(claudePath);
   } else {
     log("  ⚠️  Claude CLI not found.");
     log("  The app will run without AI features.");
@@ -174,7 +189,7 @@ async function main() {
   }
 
   log("🚀 Starting Open Carrusel...");
-  log("  Open http://localhost:3000 in your browser");
+  log("  Open http://localhost:3100 in your browser");
   log("");
   runSync("npm", ["run", "dev"]);
 }

@@ -1,5 +1,6 @@
 import { readFile, writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { googleFontParam, googleFontParamBare } from "./font-axes";
 
 const FONT_CACHE_DIR = path.resolve(process.cwd(), "data", ".font-cache");
 
@@ -72,19 +73,25 @@ async function cacheFont(family: string, css: string): Promise<void> {
   }
 }
 
-async function fetchAndInlineFont(family: string): Promise<string | null> {
-  // Fetch CSS from Google Fonts (with woff2-capable user agent)
-  const url = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@300;400;500;600;700;800&display=block`;
-  const response = await fetch(url, {
-    headers: {
-      // User agent that tells Google to serve woff2 format
-      "User-Agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    },
-  });
+// User agent that tells Google to serve woff2 format
+const WOFF2_UA =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
-  if (!response.ok) return null;
-  let css = await response.text();
+async function fetchFontCSS(param: string): Promise<string | null> {
+  const url = `https://fonts.googleapis.com/css2?${param}&display=block`;
+  const response = await fetch(url, { headers: { "User-Agent": WOFF2_UA } });
+  return response.ok ? await response.text() : null;
+}
+
+async function fetchAndInlineFont(family: string): Promise<string | null> {
+  // Fetch CSS from Google Fonts using the family's real weight spec. If that is
+  // rejected (stale axis data, renamed family), retry without any weight spec so
+  // the export still gets regular weight instead of a system-font fallback.
+  let css =
+    (await fetchFontCSS(googleFontParam(family))) ??
+    (await fetchFontCSS(googleFontParamBare(family)));
+
+  if (css === null) return null;
 
   // Find all url() references to woff2 files and inline them
   const urlRegex = /url\((https:\/\/fonts\.gstatic\.com\/[^)]+\.woff2)\)/g;

@@ -10,7 +10,7 @@ You are bootstrapping Open Carrusel for the user. Be terse — short status upda
 
 - Node: !`node --version 2>/dev/null || echo MISSING`
 - Platform: !`uname -s 2>/dev/null || echo Windows`
-- Port 3000 in use: !`lsof -ti :3000 2>/dev/null && echo YES || echo NO`
+- Port 3100 in use: !`lsof -ti :3100 2>/dev/null && echo YES || echo NO`
 - node_modules: !`test -d node_modules && echo YES || echo NO`
 - Data seeded: !`test -f data/carousels.json && echo YES || echo NO`
 
@@ -20,7 +20,7 @@ User-supplied port (optional): $ARGUMENTS
 
 1. **Verify Node ≥ 20.** Parse the version above. If MISSING or major version < 20, tell the user to install Node 20+ from https://nodejs.org and stop.
 
-2. **Pick port.** Use `$ARGUMENTS` if non-empty, else 3000. Call this `<port>`.
+2. **Pick port.** Use `$ARGUMENTS` if non-empty, else 3100. Call this `<port>`.
 
 3. **Run setup if needed.** If `node_modules` is NO **or** `Data seeded` is NO:
    - Tell the user: "Running setup (first time installs ~300MB Chromium for export — takes 1–2 minutes)..."
@@ -33,7 +33,8 @@ User-supplied port (optional): $ARGUMENTS
    - Cancel → stop.
 
 5. **Launch dev server in background** (only if not already running on `<port>`):
-   `PORT=<port> npm run dev > /tmp/open-carrusel-dev.log 2>&1 &` via Bash with `run_in_background: true`.
+   `npm run dev -- --port <port> > /tmp/open-carrusel-dev.log 2>&1 &` via Bash with `run_in_background: true`.
+   (The `dev` script defaults to `--port 3100`; the explicit flag overrides it.)
 
 6. **Wait until ready.** Poll `curl -sf http://localhost:<port>` every 1s until 200 (60s cap). On timeout, run `tail -30 /tmp/open-carrusel-dev.log`, share the output, and stop.
 
