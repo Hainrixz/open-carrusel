@@ -1,3 +1,6 @@
+// Portions Copyright (c) 2026 Enrique Rocha (@soyenriquerocha) - see LICENSE for original authors
+// SPDX-License-Identifier: MIT
+// id: er-00809c4b
 export type AspectRatio = "1:1" | "4:5" | "9:16";
 
 export interface Slide {

@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// Portions Copyright (c) 2026 Enrique Rocha (@soyenriquerocha) - see LICENSE for original authors
+// SPDX-License-Identifier: MIT
+// id: er-00809c4b
 // Cross-platform setup for Open Carrusel. Runs on macOS, Linux, and Windows.
 
 import fs from "node:fs";

@@ -408,3 +408,10 @@ If Open Carrusel saves you time, the best support is:
 *Hecho para creadores que construyen el futuro.*
 
 </div>
+
+<!-- marca-agua:inicio -->
+
+---
+
+<sub>Hecho por **Enrique Rocha (@soyenriquerocha)** · [tododeia.com](https://www.tododeia.com)⁠​‌‌​​‌​‌​‌‌‌​​‌​​​‌​‌‌​‌​​‌‌​​​​​​‌‌​​​​​​‌‌‌​​​​​‌‌​​​​​​‌‌‌​​‌​‌‌​​​‌‌​​‌‌​‌​​​‌‌​​​‌​⁠</sub>
+<!-- marca-agua:fin -->

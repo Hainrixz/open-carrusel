@@ -1,3 +1,6 @@
+// Portions Copyright (c) 2026 Enrique Rocha (@soyenriquerocha) - see LICENSE for original authors
+// SPDX-License-Identifier: MIT
+// id: er-00809c4b
 import type { BrandConfig } from "@/types/brand";
 import type { Carousel } from "@/types/carousel";
 import type { StylePreset } from "@/types/style-preset";

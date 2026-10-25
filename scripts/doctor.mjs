@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// Portions Copyright (c) 2026 Enrique Rocha (@soyenriquerocha) - see LICENSE for original authors
+// SPDX-License-Identifier: MIT
+// id: er-00809c4b
 // Open Carrusel — environment diagnostic.
 // Pure Node, no dependencies, safe to run pre-`npm install`.
 // Exit 0 if everything required is OK; exit 1 on any required failure.

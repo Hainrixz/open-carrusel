@@ -1,3 +1,6 @@
+// Portions Copyright (c) 2026 Enrique Rocha (@soyenriquerocha) - see LICENSE for original authors
+// SPDX-License-Identifier: MIT
+// id: er-00809c4b
 import { NextResponse } from "next/server";
 
 // Curated list of Google Fonts that work well for social media carousels

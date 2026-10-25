@@ -48,5 +48,6 @@
     "eslint-config-next": "16.2.3",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "author": "Enrique Rocha (@soyenriquerocha) (https://www.tododeia.com)"
 }
