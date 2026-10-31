@@ -7,29 +7,50 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import crossSpawn from "cross-spawn";
+// This script is the entry point for a fresh clone, so it runs *before*
+// `npm install` has created node_modules. It must use Node built-ins only;
+// importing a dependency here (e.g. cross-spawn) makes setup unrunnable.
+// On Windows npm is a .cmd shim, so spawning it needs a shell.
+import { spawnSync } from "node:child_process";
 
 const ROOT = process.cwd();
+const IS_WIN = process.platform === "win32";
 
 function log(msg) {
   process.stdout.write(msg + "\n");
 }
 
+// Windows ships npm as a .cmd shim, which Node refuses to spawn without a
+// shell. Passing an args array alongside shell:true is deprecated (DEP0190)
+// because the args are concatenated rather than escaped, so join them here
+// instead -- every call site in this file passes hardcoded literals.
 function runSync(cmd, args, opts = {}) {
-  const res = crossSpawn.sync(cmd, args, { stdio: "inherit", ...opts });
+  const res = IS_WIN
+    ? spawnSync([cmd, ...args].join(" "), {
+        stdio: "inherit",
+        shell: true,
+        ...opts,
+      })
+    : spawnSync(cmd, args, { stdio: "inherit", ...opts });
+  if (res.error) throw res.error;
   if (res.status !== 0) {
     throw new Error(`${cmd} ${args.join(" ")} exited with ${res.status}`);
   }
 }
 
 function tryProbeClaude() {
-  const isWin = process.platform === "win32";
-  const cmd = isWin ? "where" : "which";
+  const cmd = IS_WIN ? "where" : "which";
   try {
-    const r = crossSpawn.sync(cmd, ["claude"], {
-      encoding: "utf-8",
-      timeout: 2000,
-    });
+    const r = IS_WIN
+      ? spawnSync(cmd + " claude", {
+          encoding: "utf-8",
+          timeout: 2000,
+          shell: true,
+        })
+      : spawnSync(cmd, ["claude"], {
+          encoding: "utf-8",
+          timeout: 2000,
+        });
     if (r.status === 0 && r.stdout) {
       const first = r.stdout.split(/\r?\n/).find((l) => l.trim());
       if (first && fs.existsSync(first.trim())) return first.trim();
