@@ -6,7 +6,7 @@ import { spawn } from "child_process";
 import crossSpawn from "cross-spawn";
 import { getClaudePath, isClaudeAvailable } from "@/lib/claude-path";
 import { buildSystemPrompt } from "@/lib/chat-system-prompt";
-import { getBrand } from "@/lib/brand";
+import { addBrandRule, getBrand } from "@/lib/brand";
 import { getCarousel } from "@/lib/carousels";
 import { getPreset } from "@/lib/style-presets";
 
@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
     sessionId?: string;
     carouselId?: string;
     stylePresetId?: string;
+    rememberBrandRule?: boolean;
   };
   try {
     body = await request.json();
@@ -37,7 +38,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { message, sessionId, carouselId, stylePresetId } = body;
+  const { message, sessionId, carouselId, stylePresetId, rememberBrandRule } =
+    body;
 
   if (
     !message ||
@@ -48,11 +50,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid message" }, { status: 400 });
   }
 
+  if (rememberBrandRule === true && message.trim().length > 1000) {
+    return NextResponse.json(
+      { error: "Brand rules are limited to 1000 characters" },
+      { status: 400 }
+    );
+  }
+
+  let savedRuleText: string | null = null;
+  if (rememberBrandRule === true) {
+    savedRuleText = (await addBrandRule(message)).text;
+  }
+
   // Build dynamic system prompt with current brand + carousel + style preset context
   const brand = await getBrand();
   const carousel = carouselId ? await getCarousel(carouselId) : null;
   const stylePreset = stylePresetId ? await getPreset(stylePresetId) : null;
-  const systemPrompt = buildSystemPrompt(brand, carousel, stylePreset);
+  const ruleNote = savedRuleText
+    ? `
+
+## Rulebook update
+The app has already saved this message as a permanent brand rule. Apply it immediately and in every future turn. If the message contains no concrete design task, reply with a brief acknowledgement only and do not create or modify any slides.`
+    : "";
+  const systemPrompt =
+    buildSystemPrompt(brand, carousel, stylePreset) + ruleNote;
 
   const claudePath = getClaudePath();
   const abortController = new AbortController();

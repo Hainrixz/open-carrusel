@@ -19,6 +19,12 @@ export interface CustomFont {
   path: string;
 }
 
+export interface BrandRule {
+  id: string;
+  text: string;
+  createdAt: string;
+}
+
 export interface BrandConfig {
   name: string;
   colors: BrandColors;
@@ -26,6 +32,7 @@ export interface BrandConfig {
   customFonts: CustomFont[];
   logoPath: string | null;
   styleKeywords: string[];
+  rules: BrandRule[];
   createdAt: string;
   updatedAt: string;
 }
@@ -46,6 +53,7 @@ export const DEFAULT_BRAND: BrandConfig = {
   customFonts: [],
   logoPath: null,
   styleKeywords: [],
+  rules: [],
   createdAt: "",
   updatedAt: "",
 };

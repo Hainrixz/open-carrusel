@@ -101,6 +101,7 @@ function seedDataFiles() {
       customFonts: [],
       logoPath: null,
       styleKeywords: [],
+      rules: [],
       createdAt: "",
       updatedAt: "",
     },

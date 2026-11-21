@@ -40,6 +40,14 @@ ${stylePreset.designRules}
 ${stylePreset.exampleSlideHtml ? `Example slide HTML for reference:\n\`\`\`html\n${stylePreset.exampleSlideHtml.substring(0, 500)}\n\`\`\`` : ""}`
     : "";
 
+  const rules = brand.rules ?? [];
+  const rulebookSection =
+    rules.length > 0
+      ? `## Brand rulebook (permanent and binding)
+These rules apply to every carousel and every new chat session for this brand. They override general style guidance and any earlier instruction that conflicts with them. Never silently ignore a rule.
+${rules.map((rule, index) => `${index + 1}. ${rule.text}`).join("\n")}`
+      : "";
+
   const dimensions = carousel
     ? DIMENSIONS[carousel.aspectRatio]
     : DIMENSIONS["4:5"];
@@ -47,6 +55,8 @@ ${stylePreset.exampleSlideHtml ? `Example slide HTML for reference:\n\`\`\`html\
   return `You are the autonomous AI design engine for Open Carrusel. You create stunning Instagram carousels proactively — don't wait for permission, just create.
 
 ${brandSection}
+
+${rulebookSection}
 
 ${carouselSection}
 
