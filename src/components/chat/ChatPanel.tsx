@@ -7,7 +7,8 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { ReferenceImages } from "./ReferenceImages";
-import { AlertCircle, Plug } from "lucide-react";
+import { BrandRulesDialog } from "@/components/brand/BrandRulesDialog";
+import { AlertCircle, BookOpen, Plug } from "lucide-react";
 import type { ReferenceImage } from "@/types/carousel";
 
 interface Message {
@@ -37,6 +38,7 @@ export function ChatPanel({
   const [isStreaming, setIsStreaming] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [rulebookOpen, setRulebookOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -83,7 +85,10 @@ export function ChatPanel({
   }, [messages]);
 
   const handleSend = useCallback(
-    async (message: string) => {
+    async (
+      message: string,
+      options?: { rememberBrandRule?: boolean }
+    ) => {
       if (isStreaming) return;
       setError(null);
       setIsStreaming(true);
@@ -114,6 +119,7 @@ export function ChatPanel({
             message,
             sessionId,
             carouselId,
+            rememberBrandRule: options?.rememberBrandRule === true,
           }),
           signal: abortRef.current.signal,
         });
@@ -260,15 +266,27 @@ export function ChatPanel({
             Describe the carousel you want to create
           </p>
         </div>
-        {messages.length > 0 && (
+        <div className="flex items-center gap-1.5">
           <button
-            onClick={handleClearChat}
-            className="text-[10px] text-muted-foreground hover:text-destructive transition-colors px-1.5 py-0.5 rounded"
+            onClick={() => setRulebookOpen(true)}
+            className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors px-1.5 py-0.5 rounded"
+            title="Manage permanent brand rules"
           >
-            Clear
+            <BookOpen className="h-3 w-3" />
+            Rules
           </button>
-        )}
+          {messages.length > 0 && (
+            <button
+              onClick={handleClearChat}
+              className="text-[10px] text-muted-foreground hover:text-destructive transition-colors px-1.5 py-0.5 rounded"
+            >
+              Clear
+            </button>
+          )}
+        </div>
       </div>
+
+      <BrandRulesDialog open={rulebookOpen} onOpenChange={setRulebookOpen} />
 
       <ReferenceImages
         carouselId={carouselId}

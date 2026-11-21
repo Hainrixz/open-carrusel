@@ -4,11 +4,14 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Send, Square } from "lucide-react";
+import { Bookmark, Send, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ChatInputProps {
-  onSend: (message: string) => void;
+  onSend: (
+    message: string,
+    options?: { rememberBrandRule?: boolean }
+  ) => void;
   isStreaming: boolean;
   disabled?: boolean;
   textareaRef?: React.RefObject<HTMLTextAreaElement | null>;
@@ -25,14 +28,16 @@ const SUGGESTIONS = [
 
 export function ChatInput({ onSend, isStreaming, disabled, textareaRef: externalRef, onStop }: ChatInputProps) {
   const [value, setValue] = useState("");
+  const [rememberBrandRule, setRememberBrandRule] = useState(false);
   const internalRef = useRef<HTMLTextAreaElement>(null);
   const textareaRef = externalRef || internalRef;
 
   const handleSubmit = () => {
     const trimmed = value.trim();
     if (!trimmed || isStreaming) return;
-    onSend(trimmed);
+    onSend(trimmed, { rememberBrandRule });
     setValue("");
+    setRememberBrandRule(false);
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
@@ -55,7 +60,7 @@ export function ChatInput({ onSend, isStreaming, disabled, textareaRef: external
 
   return (
     <div className="border-t border-border p-3">
-      {value.length === 0 && !isStreaming && (
+      {value.length === 0 && !isStreaming && !rememberBrandRule && (
         <div className="flex flex-wrap gap-1.5 mb-2">
           {SUGGESTIONS.slice(0, 3).map((suggestion) => (
             <button
@@ -68,6 +73,25 @@ export function ChatInput({ onSend, isStreaming, disabled, textareaRef: external
           ))}
         </div>
       )}
+      <label className="flex items-center gap-2 mb-2 text-[11px] text-muted-foreground cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={rememberBrandRule}
+          onChange={(e) => setRememberBrandRule(e.target.checked)}
+          disabled={isStreaming || disabled}
+          className="h-3.5 w-3.5 rounded border-border accent-accent"
+        />
+        <span>Save as brand rule</span>
+        <span className="text-[10px] text-muted-foreground/70">
+          applies to every carousel
+        </span>
+      </label>
+      {rememberBrandRule && (
+        <p className="text-[10px] text-muted-foreground mb-2">
+          This message becomes a permanent rule for the brand. It is stored
+          before the agent answers.
+        </p>
+      )}
       <div className="flex items-end gap-2">
         <textarea
           ref={textareaRef}
@@ -76,7 +100,11 @@ export function ChatInput({ onSend, isStreaming, disabled, textareaRef: external
           onKeyDown={handleKeyDown}
           onInput={handleInput}
           placeholder={
-            isStreaming ? "AI is working..." : "Describe your carousel..."
+            isStreaming
+              ? "AI is working..."
+              : rememberBrandRule
+                ? "Describe a permanent brand rule..."
+                : "Describe your carousel..."
           }
           disabled={isStreaming || disabled}
           rows={1}
@@ -97,9 +125,15 @@ export function ChatInput({ onSend, isStreaming, disabled, textareaRef: external
             size="icon"
             onClick={handleSubmit}
             disabled={!value.trim() || disabled}
-            aria-label="Send message"
+            aria-label={
+              rememberBrandRule ? "Save brand rule" : "Send message"
+            }
           >
-            <Send className="h-4 w-4" />
+            {rememberBrandRule ? (
+              <Bookmark className="h-4 w-4" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
           </Button>
         )}
       </div>
