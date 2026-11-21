@@ -26,6 +26,19 @@ export function FontSelector({ label, value, onChange }: FontSelectorProps) {
       .catch(() => {});
   }, []);
 
+  // The preview only sets font-family; the browser has to be told to load the
+  // Google Font first, otherwise it silently falls back to sans-serif.
+  useEffect(() => {
+    if (!value) return;
+    const id = `oc-font-${value.replace(/\s+/g, "-")}`;
+    if (document.getElementById(id)) return;
+    const link = document.createElement("link");
+    link.id = id;
+    link.rel = "stylesheet";
+    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(value)}:wght@400;700&display=swap`;
+    document.head.appendChild(link);
+  }, [value]);
+
   return (
     <div>
       <label className="text-xs font-medium text-muted-foreground">
